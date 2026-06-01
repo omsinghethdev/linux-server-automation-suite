@@ -14,8 +14,8 @@ show_menu(){
 
 	}
 get_valid_choice() {
-	attempt=0
-        maxattempt=3
+	local attempt=0
+        local maxattempt=3
         
         while (( attempt < maxattempt )); do
                 read -p "Enter your choice: " choice 
@@ -51,7 +51,8 @@ get_valid_choice() {
 
 
 handle_choice() {
-		case "${choice}" in
+		local selected_choice="$1"
+		case "${selected_choice}" in
                 1) echo "User Management selected" ;;
                 2) echo "System Monitoring selected" ;;
                 3) echo "Backup Management selected" ;;
@@ -63,9 +64,10 @@ handle_choice() {
 		}
 
 ask_continue() {
+		local confirm
 		read -p  "Do you want to go to  Main menu?(yes/no):" confirm
                     if [[ "${confirm}" == 'yes' ]]; then
-                        continue
+                        return 0
                     else 
                         echo "Exiting Script...."
                         exit 0
@@ -79,7 +81,7 @@ while true; do
 	
 	get_valid_choice
 
-	handle_choice
+	handle_choice "$choice"
 
 	ask_continue	
 done
