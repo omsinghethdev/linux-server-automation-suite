@@ -49,5 +49,58 @@ get_valid_choice() {
 }
 
 
+create_user(){
+        local username
+        local attempt=0
+        local maxattempt=3
+        while (( attempt < maxattempt )) ; do 
+        read -p "Enter the username:" username
+        if [[ -z  "${username}" ]]; then
+                echo "Username is Empty"
+                ((attempt++))
+        elif ! [[ "${username}" =~ ^[a-z0-9_-]+$ ]]; then
+                echo "Invalid username entry."
+                ((attempt++))
+        
+        elif getent passwd "${username}" > /dev/null; then
+                echo "User already exists."
+                ((attempt++))
+        else
+                echo "Creating User "${username}"
+                        if sudo useradd "${username}"; then
+                                echo "User created Succesfully."
+                                break
+                        else
+                                echo "ERROR in Creating user"
+                        fi
 
+
+        fi
+     done
+
+        if (( attempt == maxattempt )); then
+                echo "To many attmepts.Returning to User Management menu...."
+                return 1
+        fi
+
+        
+}
+delete_user(){
+
+}
+lock_user(){
+
+}
+unlock_user(){
+
+}
+create_group(){
+
+}
+add_user_to_group(){
+
+}
+list_users(){
+
+}
 	
