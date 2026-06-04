@@ -104,13 +104,13 @@ delete_user(){
                         if [[ "$confirm" == "yes" ]]; then
                                 echo "Deleting the User ${username}"
                                 
-                        if sudo userdel ${username}; then
-                                echo "Deleted user Successfully."
-                                break
-                        else
-                                echo "ERROR in deleting user."
-                                return 1
-                        fi
+                                if sudo userdel ${username}; then
+                                        echo "Deleted user Successfully."
+                                        break
+                                else
+                                        echo "ERROR in deleting user."
+                                        return 1
+                                fi
                         else
                                 echo "Deleting operation cancelled."
                                 return 0
@@ -129,12 +129,90 @@ delete_user(){
 
 
 }
-# lock_user(){
 
-# }
-# unlock_user(){
+ lock_user(){
+        local username
+        local attempt=0
+        local maxattempt=3
+        while ((attempt < maxattempt)); do
+                if [[ -z "${usernaeme}" ]]; then
+                        echo "Username is empty."
+                        ((attempt++))
+                elif ! [[ ${username} =~ ^[a-z0-9_-]+$ ]]; then
+                        echo "Invalid username entered."
+                        ((attempt++))
+                elif  getent passwd "${username}" > /dev/null; then
+                        echo "User Exist."
+                        read -p "Are you sure to lock the ${username}?(yes/no)" choice
+                                if [[ ${choice} == 'yes' ]]; then
+                                        echo "Locking the user."
+                                          if sudo usermod -L ${username}; then
+                                                echo "Locked user Successfully."
+                                                break
+                                          else
+                                                echo "ERROR in Locking user."
+                                                return 1
+                                          fi
 
-# }
+                                else
+                                        echo "Locking User operation cancelled."
+                                        return 0
+                                fi 
+                else 
+                        echo "User Doesn't Exist."
+                        ((attempt++))
+                fi         
+
+        done
+        if (( attempt == maxattempt )); then
+                echo "To many attmepts.Returning to User Management menu...."
+                return 1
+        fi
+
+ }
+ unlock_user(){
+        local username
+        local attempt=0
+        local maxattempt=3
+        while ((attempt < maxattempt)); do
+                read -p "Enter the username:" username
+
+                if [[ -z ${username} ]]; then
+                        echo "Username is empty."
+                        ((attempt++))
+                elif ! [[ ${username} =~ ^[a-z0-9_-]+$ ]]; then
+                        echo "Invalid username formate."
+                        ((attempt++))
+                elif getent passwd "${username}" > /dev/null; then
+                        echo "User exist."
+                        read -p "Do you actually want to unlock the user ${username}?(yes/no)" choice
+                        if [[ "${choice}" == 'yes' ]]; then
+                                echo "Unlocking User."
+                                if sudo usermod -U "${username}"; then
+                                   echo "Unlocked user Successfully."
+                                   break
+                                else
+                                   echo "ERROR in Unlocking user."
+                                   return 1
+                                fi
+                        else
+                                echo "Unlocking user operation cancelled."
+                                return 0
+                        fi
+                else 
+                        echo "User Don't Exist."
+                        ((attempt++))
+                fi
+        
+
+        done
+
+        if (( attempt == maxattempt )); then
+                echo "To many attmepts.Returning to User Management menu...."
+                return 1
+        fi
+
+ }
 # create_group(){
 
 # }
