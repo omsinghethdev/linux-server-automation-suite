@@ -48,6 +48,22 @@ get_valid_choice() {
         
 }
 
+handle_user_choice() {
+    local selected_choice="$1"
+
+    case "$selected_choice" in
+        1) create_user ;;
+        2) delete_user ;;
+        3) lock_user ;;
+        4) unlock_user ;;
+        5) create_group ;;
+        6) add_user_to_group ;;
+        7) list_users ;;
+        8) return 0 ;;
+        *) echo "Invalid choice." ;;
+    esac
+}
+
 
 create_user() {
         local username
@@ -213,13 +229,47 @@ delete_user(){
         fi
 
  }
-# create_group(){
+create_group(){
+        local groupname
+        local attempt=0
+        local maxattempt=3
+        while (( attempt < maxattempt)); do
+                read -p "Enter the groupname to Create:" groupname
+                if [[ -z "${groupname}" ]]; then
+                        echo "Empty groupname.Retry!"
+                        ((attempt++))
+                elif ! [[ "${groupname}" =~ ^[a-z0-9_-]+$  ]]; then
+                        echo "Invalid Groupname Entered."
+                        ((attempt++))
+                elif getent group "${groupname}" > /dev/null; then
+                        echo "Group already exists."
+                        ((attempt++))
+                else
+                        echo "Creating group: ${groupname}."
+                        if sudo groupadd "${groupname}"; then
+                                 echo "Group created successfully."
+                                 break
+                        else
+                                 echo "ERROR creating group."
+                                 return 1
+                        fi
+                fi
+        done
+                if (( attempt == maxattempt )); then
+                       echo "To many attmepts.Returning to User Management menu...."
+                       return 1 
+                fi
+ }
+#  add_user_to_group(){
 
-# }
-# add_user_to_group(){
-
-# }
+#  }
 # list_users(){
 
 # }
+while true
+do
+    show_user_menu
+    get_valid_choice
+    handle_user_choice "$choice"
+done
 	

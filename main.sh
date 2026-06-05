@@ -53,7 +53,7 @@ get_valid_choice() {
 handle_choice() {
 		local selected_choice="$1"
 		case "${selected_choice}" in
-                1) echo "User Management selected" ;;
+                1) echo "User Management selected"; source ./modules/user_management.sh ;;
                 2) echo "System Monitoring selected" ;;
                 3) echo "Backup Management selected" ;;
                 4) echo "Log Analysis selected" ;;
