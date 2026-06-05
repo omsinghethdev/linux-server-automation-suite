@@ -110,7 +110,7 @@ delete_user(){
                 if [[ -z ${username} ]]; then
                         echo "No User Entered "
                         ((attempt++))
-                elif  ! [[ ${username} =~ ^[a-z0-9\-_]+$ ]]; then
+                elif  ! [[ ${username} =~ ^[a-z0-9-_]+$ ]]; then
                         echo "Invalid user entry."
                         ((attempt++))
                 elif getent passwd "${username}" > /dev/null; then
@@ -151,6 +151,7 @@ delete_user(){
         local attempt=0
         local maxattempt=3
         while ((attempt < maxattempt)); do
+                read -p "Enter the username to Lock:" username
                 if [[ -z "${usernaeme}" ]]; then
                         echo "Username is empty."
                         ((attempt++))
