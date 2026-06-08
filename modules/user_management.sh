@@ -6,9 +6,10 @@ show_user_menu(){
 	echo "3.Lock User"
 	echo "4.Unlock User"
 	echo "5.Create Group"
-	echo "6.Add User to Group"
-	echo "7.List Users"
-	echo "8.Back to main menu"
+	echo "6.Delete Group"
+	echo "7.Add User to Group"
+	echo "8.List Users"
+	echo "9.Back to main menu"
 	echo  "------------------"
   }
 
@@ -57,9 +58,10 @@ handle_user_choice() {
         3) lock_user ;;
         4) unlock_user ;;
         5) create_group ;;
-        6) add_user_to_group ;;
-        7) list_users ;;
-        8) return 0 ;;
+	6) delete_group ;;
+        7) add_user_to_group ;;
+        8) list_users ;;
+        9) return 1 ;;
         *) echo "Invalid choice." ;;
     esac
 }
@@ -107,10 +109,10 @@ delete_user(){
         local maxattempt=3
         while ((attempt < maxattempt)); do
                 read -p  "Enter the user to Delete:" username
-                if [[ -z ${username} ]]; then
+                if [[ -z "${username}" ]]; then
                         echo "No User Entered "
                         ((attempt++))
-                elif  ! [[ ${username} =~ ^[a-z0-9-_]+$ ]]; then
+                elif  ! [[ "${username}" =~ ^[a-z0-9_-]+$ ]]; then
                         echo "Invalid user entry."
                         ((attempt++))
                 elif getent passwd "${username}" > /dev/null; then
@@ -120,7 +122,7 @@ delete_user(){
                         if [[ "$confirm" == "yes" ]]; then
                                 echo "Deleting the User ${username}"
                                 
-                                if sudo userdel ${username}; then
+                                if sudo userdel "${username}"; then
                                         echo "Deleted user Successfully."
                                         break
                                 else
@@ -152,18 +154,18 @@ delete_user(){
         local maxattempt=3
         while ((attempt < maxattempt)); do
                 read -p "Enter the username to Lock:" username
-                if [[ -z "${usernaeme}" ]]; then
+                if [[ -z "${username}" ]]; then
                         echo "Username is empty."
                         ((attempt++))
-                elif ! [[ ${username} =~ ^[a-z0-9_-]+$ ]]; then
+                elif ! [[ "${username}" =~ ^[a-z0-9_-]+$ ]]; then
                         echo "Invalid username entered."
                         ((attempt++))
                 elif  getent passwd "${username}" > /dev/null; then
                         echo "User Exist."
                         read -p "Are you sure to lock the ${username}?(yes/no)" choice
-                                if [[ ${choice} == 'yes' ]]; then
+                                if [[ "${choice}" == 'yes' ]]; then
                                         echo "Locking the user."
-                                          if sudo usermod -L ${username}; then
+                                          if sudo usermod -L "${username}"; then
                                                 echo "Locked user Successfully."
                                                 break
                                           else
@@ -194,10 +196,10 @@ delete_user(){
         while ((attempt < maxattempt)); do
                 read -p "Enter the username:" username
 
-                if [[ -z ${username} ]]; then
+                if [[ -z "${username}" ]]; then
                         echo "Username is empty."
                         ((attempt++))
-                elif ! [[ ${username} =~ ^[a-z0-9_-]+$ ]]; then
+                elif ! [[ "${username}" =~ ^[a-z0-9_-]+$ ]]; then
                         echo "Invalid username formate."
                         ((attempt++))
                 elif getent passwd "${username}" > /dev/null; then
@@ -261,6 +263,46 @@ create_group(){
                        return 1 
                 fi
  }
+
+delete_group() {
+	local groupname
+	local attempt=0
+	local maxattempt=3
+	
+	while (( attempt < maxattempt )); do
+	     read -p "Enter the group name:" groupname
+	        if [[ -z "${groupname}" ]]; then
+		     echo "Empty groupname."
+		     ((attempt++))
+	     	elif ! [[ "${groupname}" =~ ^[a-z0-9_-]+$ ]]; then
+		     echo "Invalid grouname format."
+		     ((attempt++))
+		elif getent group "${groupname}" > /dev/null; then
+		     echo  "Group exists."
+		     read -p "Are sure to delete the group ${groupname}?(y/n):" choice
+			if [[ "${choice}" == 'y' ]];then
+				echo "Deleting the group ${groupname}."
+					if sudo groupdel "${groupname}"; then
+						echo "Deleted group Successfully."
+						break
+					else 
+						echo "ERROR in deleting group."
+						return 1
+					fi
+	                else
+				echo "Deleting group operation cancelled."
+				return 0
+			fi	    
+		else
+		     echo "Group does'nt exist."
+		     ((attempt++))
+		fi
+	done
+		if (( attempt == maxattempt )); then
+			echo "Too many attempts.Returning to User Management menu..."
+			return 1
+		fi
+}
 #  add_user_to_group(){
 
 #  }
@@ -272,5 +314,9 @@ do
     show_user_menu
     get_valid_choice
     handle_user_choice "$choice"
+    if (( $? == 1 )); then
+        break
+    fi
 done
 	
+
