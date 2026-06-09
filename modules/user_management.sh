@@ -303,12 +303,79 @@ delete_group() {
 			return 1
 		fi
 }
-#  add_user_to_group(){
+  add_user_to_group(){
+                local username
+                local groupname
+                local attempt_usr=0
+                local max_att_usr=3
+                local attempt_gp=0
+                local max_att_gp=3
 
-#  }
-# list_users(){
+                while ((attempt_usr < max_att_usr)); do
+                        read -p "Enter the user name to add in the Group:" username
+                        if [[ -z "${username}" ]]; then 
+                                echo "Username empty.Retry"
+                                ((attempt_usr++))
+                        elif ! [[ "${username}" =~ ^[a-z0-9_-]+$ ]]; then
+                                echo "Invalid username formate Retry."
+                                ((attempt_usr++))
+                        elif getent passwd "${username}" > /dev/null; then
+                                echo "User ${username} found."
+                                break
+                        else 
+                                echo "User does'nt exist."
+                        fi
 
-# }
+                done
+                if ((attempt_usr == max_att_usr)); then
+                        echo "Too many attempts.Returning to the user menu"
+                        return 1
+                fi
+
+                while ((attempt_gp < max_att_gp)); do
+                        read -p "Enter the user name to add in the Group:" username
+                        if [[ -z "${groupname}" ]]; then 
+                                echo "Groupname empty.Retry"
+                                ((attempt_gp++))
+                        elif ! [[ "${groupname}" =~ ^[a-z0-9_-]+$ ]]; then
+                                echo "Invalid groupname format. Retry."
+                                ((attempt_gp++))
+                        elif getent group "${groupname}" > /dev/null; then
+                                echo "Group ${groupname} found" 
+                                break
+                        else
+                                echo "Group does'nt exists."
+
+                                ((attempt_gp++))
+                        fi
+
+                done
+                if ((attempt_gp == max_att_gp)); then
+                        echo "Too many attempts.Returning to the user menu"
+                        return 1
+                fi
+                read -p "Add user '${username}' to group '${groupname}'? (yes/no): " confirm
+
+                if [[ "${confirm}" == "yes" ]]; then
+                        if sudo -aG "${groupname}" "${username}"; then  
+                                echo "User '${username}' added to group '${groupname} successfully."
+                        else 
+                                echo "ERROR: Failed to add user to group"
+                                return 1
+                        fi
+                
+                else
+                        echo "Operation Cancelled."
+                        return 0
+                fi
+
+}
+ list_users(){
+
+    echo "Available Users:"
+    getent passwd | cut -d: -f1
+
+}
 while true
 do
     show_user_menu
