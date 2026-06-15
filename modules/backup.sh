@@ -139,7 +139,16 @@ main_backup(){
         create_backup
 
 }
-# list_avl_backup(){}
+ list_avl_backup(){
+        get_destination_folder
+        echo "Available backups in : ${destination_back}"
+        backups=$(find "${destination_back}" -maxdepth 1 -type f \( -name "*.tar" \))
+        if [[ -z "${backups}" ]]; then
+                echo "No backups available."
+        else
+                echo "${backups}"
+        fi
+ }
 # restore_backup(){}
 # delete_backup(){}
 # view_backup_log(){}
