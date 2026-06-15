@@ -25,13 +25,13 @@ get_valid_choice() {
                         ((attempt++))
 
 
-                elif ! [[ "$choice" =~ ^[0-9]+$ ]]; then
+                elif ! [[ "${choice}" =~ ^[0-9]+$ ]]; then
                         echo "Choice must be number."
                         ((attempt++))
 
 
-                elif  (( choice <1 || choice > 8 )); then
-                        echo "Choice must be between 1 and 8"
+                elif  (( choice <1 || choice > 9 )); then
+                        echo "Choice must be between 1 and 9"
                         ((attempt++))
 
                 else 
@@ -52,7 +52,7 @@ get_valid_choice() {
 handle_user_choice() {
     local selected_choice="$1"
 
-    case "$selected_choice" in
+    case "${selected_choice}" in
         1) create_user ;;
         2) delete_user ;;
         3) lock_user ;;
