@@ -45,8 +45,7 @@ handle_backup_choice() {
                 2)list_avl_backup ;;
                 3)restore_backup ;;
                 4)delete_backup ;;
-                5)view_backup_log ;;
-                6)return 1 ;;
+                5)return 1 ;;
                 *)echo "Invalid Choice."
         esac
 }
@@ -176,5 +175,14 @@ restore_backup(){
                 echo "Error in restoring."
         fi
 }
-# delete_backup(){}
-# view_backup_log(){}
+delete_backup(){
+        get_destination_folder
+        list_avl_backup
+        read -p "Select backup number to delete:" choice 
+        del_backup= "${backups[$((choice - 1))]}"
+        if rm del_backup ; then 
+                echo "Backup Deleted Successfully"
+        else 
+                echo "Error is deletion."
+        fi
+}
