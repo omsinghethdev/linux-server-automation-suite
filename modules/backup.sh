@@ -141,14 +141,40 @@ main_backup(){
 }
  list_avl_backup(){
         get_destination_folder
-        echo "Available backups in : ${destination_back}"
-        backups=$(find "${destination_back}" -maxdepth 1 -type f \( -name "*.tar" \))
-        if [[ -z "${backups}" ]]; then
-                echo "No backups available."
-        else
-                echo "${backups}"
+        mapfile -t backups < <(
+            find "${destinaiton_back}" \
+            -maxdepth 1 \
+            -type f \
+            -name "*.tar"
+
+        )
+
+        if  (("${#backups[@]}" == 0)); then    
+                echo "No backup available."
+                return 1
         fi
+
+        echo "Available Backups:"
+
+        for i in "${!backups[@]}"; do  
+                echo "$((i+1)): $(basename "${backups[$i]}")"
+        done
+        return 0
  }
-# restore_backup(){}
+restore_backup(){
+        list_avl_backup || return 1
+        read -p "Select backup number:" choice
+
+        selected_backup="${backups[$((choice -1))]}"
+
+        get_destination_folder
+        restore_dir="${destination_back}"
+
+        if tar -xf "${selected_backup}" -C "${restore_dir}"; then
+                echo "Backup restored successfully"
+        else 
+                echo "Error in restoring."
+        fi
+}
 # delete_backup(){}
 # view_backup_log(){}
