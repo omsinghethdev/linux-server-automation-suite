@@ -55,7 +55,7 @@ handle_choice() {
 		case "${selected_choice}" in
                 1) echo "User Management selected"; source ./modules/user_management.sh ;;
                 2) echo "System Monitoring selected" ;;
-                3) echo "Backup Management selected" ;;
+                3) echo "Backup Management selected"; source ./modules/backup.sh ;;
                 4) echo "Log Analysis selected" ;;
                 5) echo "Deployment Automation selected" ;;
                 6) echo "Exiting..."; exit 0 ;;
