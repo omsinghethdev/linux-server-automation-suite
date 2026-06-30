@@ -57,7 +57,7 @@ handle_choice() {
                 2) echo "System Monitoring selected" ;;
                 3) echo "Backup Management selected"; source ./modules/backup.sh ;;
                 4) echo "Log Analysis selected" ;;
-                5) echo "Deployment Automation selected" ;;
+                5) echo "Deployment Automation selected" ; source ./modules/deployment.sh ;;
                 6) echo "Exiting..."; exit 0 ;;
         	esac
 
