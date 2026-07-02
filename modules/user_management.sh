@@ -1,3 +1,7 @@
+
+pause_screen() {
+    read -p "Press Enter to continue..."
+}
 show_user_menu(){
 
 	echo "-----------------"
@@ -53,14 +57,30 @@ handle_user_choice() {
     local selected_choice="$1"
 
     case "${selected_choice}" in
-        1) create_user ;;
-        2) delete_user ;;
-        3) lock_user ;;
-        4) unlock_user ;;
-        5) create_group ;;
-	6) delete_group ;;
-        7) add_user_to_group ;;
-        8) list_users ;;
+        1) create_user 
+           pause_screen             
+           ;;
+        2) delete_user 
+           pause_screen
+           ;;
+        3) lock_user 
+           pause_screen
+           ;;
+        4) unlock_user 
+           pause_screen
+           ;;
+        5) create_group
+           pause_screen
+           ;;
+	6) delete_group
+           pause_screen
+           ;;
+        7) add_user_to_group
+           pause_screen
+           ;;
+        8) list_users
+           pause_screen
+           ;;
         9) return 1 ;;
         *) echo "Invalid choice." ;;
     esac
@@ -376,8 +396,12 @@ delete_group() {
     getent passwd | cut -d: -f1
 
 }
+clear_screen(){
+        clear
+}
 while true
 do
+    clear_screen
     show_user_menu
     get_valid_choice
     handle_user_choice "$choice"

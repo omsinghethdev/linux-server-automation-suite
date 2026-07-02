@@ -36,6 +36,9 @@ show_memory_usage(){
     
 
 }
+get_disk_usage(){
+    df -h 
+}
 show_disk_usage(){
 
 }
