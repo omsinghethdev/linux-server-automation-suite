@@ -4,7 +4,9 @@ pause_screen() {
 }
 show_user_menu(){
 
-	echo "-----------------"
+	echo "====================="
+        echo "User Management Menu "
+        echo "====================="
 	echo "1.Creat User"
 	echo "2.Delete User"
 	echo "3.Lock User"
@@ -81,7 +83,9 @@ handle_user_choice() {
         8) list_users
            pause_screen
            ;;
-        9) return 1 ;;
+        9) return 1
+           pause_screen
+           ;;
         *) echo "Invalid choice." ;;
     esac
 }

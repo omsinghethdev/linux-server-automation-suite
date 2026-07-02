@@ -1,30 +1,33 @@
+
 show_backup_menu(){
-        echo "---------------------"
+        echo "=========================="
+        echo " Backup Management Menu "
+        echo "=========================="
+
         echo "1.Create Backup"
         echo "2.List Available Backup"
         echo "3.Restore Backup"
         echo "4.Delete Backup"
-        echo "5.View Backup log"
-        echo "6.Back to Main menu"
+        echo "5.Back to Main menu"
         echo "----------------------"
 }
-get_valid_choice() {
+get_valid_backup_choice() {
         local attempt=0
         local maxattempt=3
 
         while ((attempt < maxattempt)); do
-                read -p "Enter your choice:" choice
-                if [[ -z "${choice}" ]]; then
+                read -p "Enter your choice:" backup_choice
+                if [[ -z "${backup_choice}" ]]; then
                         echo "Your Choice is empty.Retry"
                         ((attempt++))
-                elif ! [[ "${choice}" =~ ^[0-9]+$ ]]; then
+                elif ! [[ "${backup_choice}" =~ ^[0-9]+$ ]]; then
                         echo "Choice must be number."
                         ((attempt++))
-                elif (( choice < 1 || choice > 6)); then
+                elif (( backup_choice < 1 || backup_choice > 6)); then
                         echo "Choice must be between 1 and 6"
                         ((attempt++))
                 else
-                        echo "Valid Choic."
+                        echo "Valid Choice."
                         break
                 fi
                 echo "Attempt left :$((maxattempt - attempt))"
@@ -80,12 +83,11 @@ done
 
 #Destination folder input
 get_destination_folder(){
-
 destination_back=''
 local attempt_back=1
 local count_back=3
 while [[ ${attempt_back} -le ${count_back} ]]; do
-        read -e -p "Enter the destination folder for backup:" destination_back
+        read -e -p "Enter the  destination folder :" destination_back
         if [[ -d "${destination_back}" ]]; then
             echo "Destination folder exists."
             return 0
@@ -132,8 +134,8 @@ read -p "Proceed with backup?(y/n)" confirm
     fi    
 }
 main_backup(){
-        get_source_folder
-        get_destination_folder
+        get_source_folder 
+        get_destination_folder 
         show_backup_summary
         create_backup
 
@@ -176,7 +178,7 @@ restore_backup(){
         fi
 }
 delete_backup(){
-        get_destination_folder
+        get_destination_folder 
         list_avl_backup
         read -p "Select backup number to delete:" choice 
         del_backup= "${backups[$((choice - 1))]}"
@@ -186,3 +188,13 @@ delete_backup(){
                 echo "Error is deletion."
         fi
 }
+while true ; do
+    clear_screen
+    show_backup_menu
+    get_valid_backup_choice
+    handle_backup_choice "$backup_choice"
+    if (( $? == 1 )); then
+        break
+    fi
+done
+	

@@ -1,6 +1,6 @@
 show_deployment_menu(){
         echo "--------------------"
-        echo "   Deployment Menu. "
+        echo "   Deployment Menu "
         echo "--------------------"
         echo "1.Deploy Application"
         echo "2.Start Application"

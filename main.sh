@@ -7,9 +7,8 @@ show_menu(){
         echo "1. User Management"
         echo "2. System Monitoring"
         echo "3. Backup Management"
-        echo "4. Log Analysis"
-        echo "5. Deployment Automation"
-        echo "6. Exit"
+        echo "4. Deployment Automation"
+        echo "5. Exit"
         echo "==================================="
 
 	}
@@ -31,7 +30,7 @@ get_valid_choice() {
 
 
                 elif  (( choice <1 || choice > 6 )); then
-                        echo "Choice must be between 1 and 6"
+                        echo "Choice must be from 1 to 5"
                         ((attempt++))
 
                 else 
@@ -53,12 +52,25 @@ get_valid_choice() {
 handle_choice() {
 		local selected_choice="$1"
 		case "${selected_choice}" in
-                1) echo "User Management selected"; source ./modules/user_management.sh ;;
-                2) echo "System Monitoring selected" ;;
-                3) echo "Backup Management selected"; source ./modules/backup.sh ;;
-                4) echo "Log Analysis selected" ;;
-                5) echo "Deployment Automation selected" ; source ./modules/deployment.sh ;;
-                6) echo "Exiting..."; exit 0 ;;
+                1) echo "User Management selected" 
+                   read -p "Press Enter to continue..."
+                   source ./modules/user_management.sh
+                   ;;
+                2) echo "System Monitoring selected"
+                   read -p "Press Enter to continue..." 
+                   ;;
+                3) echo "Backup Management selected"
+                   read -p "Press Enter to continue..."
+                   source ./modules/backup.sh
+                   ;;
+                4) echo "Deployment Automation selected"
+                   read -p "Press Enter to continue..."
+                   source ./modules/deployment.sh
+                   ;;
+                5) echo "Exiting..."
+                   read -p "Press Enter to continue..."
+                   exit 0
+                   ;;
         	esac
 
 		}
@@ -74,9 +86,13 @@ ask_continue() {
                     fi
 
 		}
+clear_screen(){
+        clear
+}
 
 
 while true; do
+        clear_screen
 	show_menu
 	
 	get_valid_choice
