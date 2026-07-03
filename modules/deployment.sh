@@ -1,6 +1,6 @@
 show_deployment_menu(){
         echo "--------------------"
-        echo "   Deployment Menu "
+        echo "   Deployment Menu  "
         echo "--------------------"
         echo "1.Deploy Application"
         echo "2.Start Application"
@@ -10,34 +10,35 @@ show_deployment_menu(){
         echo "6.Backup to main menu"
 }
 
-get_valid_choice(){
+get_valid_deployment_choice(){
         local attempt=0
         local maxattempt=3
-        local choice
+        local deploy_choice
 
         while ((attempt < maxattempt)); do
-            read -rp "Enter Your Choice:" choice
-            if [[ -z "${choice}" ]]; then
-                echo "Your Choice is Empty.Retry"
+            read  -e -p "Enter Your Choice:" deploy_choice
+            if [[ -z "${deploy_choice}" ]]; then
+                echo "Your Choice is Empty.Retry" >&2
                 ((attempt++))
-            elif (( choice < 1 || choice > 7)); then
-                        echo "Choice must be between 1 and 7"
+            elif (( deploy_choice < 1 || deploy_choice > 6)); then
+                        echo "Choice must be form 1 to 6" >&2
                         ((attempt++))
                 else
-                        echo "Valid Choice."
-                        return 0
+                        echo "Valid Choice." >&2
+                        echo "${deploy_choice}"
+                        break
                 fi
                 echo "Attempt left :$((maxattempt - attempt))"
         done
 
             if ((attempt == maxattempt)); then
-                        echo "To many envalid attempt.Exiting..."
+                        echo "To many invalid attempt.Exiting..." >&2
                         return 1
             fi
 
 }
 
-handle_choice(){
+handle_deployment_choice(){
     local select_choice="$1"
     case  "${select_choice}" in
         1)deploy_app ;;
@@ -50,12 +51,12 @@ handle_choice(){
     esac
 
 }
-get_valid_project_path(){
+get_valid_deploy_project_path(){
     local path=''
     local attempt=0
     local maxattempt=3
     while ((attempt < maxattempt)); do
-        read -p "Enter the Application path:" path 
+        read -e -p "Enter the Application path:" path 
         if [[ -d "${path}" ]]; then 
             echo "Application Directory exist." >&2
                 if [[ -f "${path}/Dockerfile" && -f "${path}/docker-compose.yml" ]]; then
@@ -103,19 +104,19 @@ deploy_app(){
     project_path=$(get_valid_project_path) || return 1
     cd "${project_path}" || return 1
 
-    echo "Deployment statues:"
+    echo "Deployment status:" >&2
     docker compose ps
 
 
  }
  check_deploy_status(){
     locat project_path
-    project_path=$(get_valid_project_path) || return 1
+    project_path=$(get_valid_deployment_project_path) || return 1
     cd "${project_path}" || return 1
     echo "Deployment status:"
     docker compose ps
     read -p "Restart this application? (yes/no): " confirm
-    if [[ "${confirm}" == "yes"]]; then
+    if [[ "${confirm}" == "yes" ]]; then
         if docker compose restart ; then
             echo "Application restarted successfully."
         else
@@ -130,11 +131,18 @@ deploy_app(){
 # view_deploy_logs(){
 
 # }
+clear_screen(){
+    clear
+}
 main(){
+    clear_screen
     show_deployment_menu
     
-    choice=$(get_valid_choice) || return 1
+    choice=$(get_valid_deployment_choice) || return 1
     handle_choice "${choice}"
+    if (( $? == 1 )); then
+        break
+    fi
 
 }
 main

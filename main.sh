@@ -99,5 +99,5 @@ while true; do
 
 	handle_choice "$choice"
 
-	ask_continue	
+	# ask_continue	
 done

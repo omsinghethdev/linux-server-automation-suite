@@ -26,7 +26,7 @@ get_valid_choice() {
         while (( attempt < maxattempt )); do
                 read -p "Enter your choice: " choice 
                 if [[ -z "${choice}" ]]; then
-                        echo "Choice is empty"
+                        echo "Choice is empty" 
                         echo "Choose Again"
                         ((attempt++))
 
@@ -37,11 +37,12 @@ get_valid_choice() {
 
 
                 elif  (( choice <1 || choice > 9 )); then
-                        echo "Choice must be between 1 and 9"
+                        echo "Choice must be from 1 to 9"
                         ((attempt++))
 
                 else 
-                        echo "Valid Choice"
+                        echo "Valid Choice" >&2
+                        echo "${choice}"
                         break
                 fi
         
@@ -83,8 +84,9 @@ handle_user_choice() {
         8) list_users
            pause_screen
            ;;
-        9) return 1
-           pause_screen
+           
+        9) pause_screen
+           return 1
            ;;
         *) echo "Invalid choice." ;;
     esac
@@ -407,8 +409,9 @@ while true
 do
     clear_screen
     show_user_menu
-    get_valid_choice
-    handle_user_choice "$choice"
+#     get_valid_choice
+    user_choice=$(get_valid_choice)
+    handle_user_choice "$user_choice"
     if (( $? == 1 )); then
         break
     fi

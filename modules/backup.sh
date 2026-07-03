@@ -1,3 +1,6 @@
+pause_screen(){
+        read -p "Press Enter to continue..."
+}
 
 show_backup_menu(){
         echo "=========================="
@@ -27,7 +30,8 @@ get_valid_backup_choice() {
                         echo "Choice must be between 1 and 6"
                         ((attempt++))
                 else
-                        echo "Valid Choice."
+                        echo "Valid Choice." >&2
+                        echo "${backup_choice}"
                         break
                 fi
                 echo "Attempt left :$((maxattempt - attempt))"
@@ -44,10 +48,17 @@ handle_backup_choice() {
         local select_choice="$1"
 
         case "${select_choice}" in
-                1)main_backup ;;
-                2)list_avl_backup ;;
-                3)restore_backup ;;
-                4)delete_backup ;;
+                1)main_backup
+                  pause_screen
+                  ;;
+                2)list_avl_backup
+                  pause_screen
+                  ;;
+                3)restore_backup
+                  pause_screen
+                  ;;
+                4)delete_backup
+                  pause_screen;;
                 5)return 1 ;;
                 *)echo "Invalid Choice."
         esac
@@ -198,3 +209,4 @@ while true ; do
     fi
 done
 	
+
