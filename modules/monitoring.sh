@@ -19,7 +19,7 @@ show_monitoring_menu(){
 get_valid_monitoring_choice(){
         local attempt=0
         local maxattempt=3
-        local monitoring_choice
+        
 
         while ((attempt < maxattempt)); do
             read  -e -p "Enter Your Choice:" monitoring_choice
@@ -44,30 +44,6 @@ get_valid_monitoring_choice(){
 
 }
 
-handle_monitoring_choice(){
-    local select_choice="$1"
-    case  "${select_choice}" in
-        1)show_cpu_usage
-          pause_screen
-          ;;
-        2)show_memory_usage
-          pause_screen
-          ;;
-        3)show_disk_usage
-          pause_screen
-          ;;
-        4)show_open_ports
-          pause_screen
-          ;;
-        5)show_running_services
-          pause_screen
-          ;;
-        6)return 1
-          pause_screen;;
-        *)echo "Invalid Choice" ;;
-    esac
-
-}
 
 get_cpu_usage(){
     top -bn1 |grep "Cpu(s)" | awk  '{
@@ -107,47 +83,46 @@ show_memory_usage(){
     
 
 }
-get_disk_usage(){
-    df -h 
-}
-show_disk_usage(){
+# get_disk_usage(){
+#     df -h 
+# }
+# show_disk_usage(){
+
+# }
+# show_open_ports(){
+
+# }
+# show_running_services(){
+
+# }
+
+
+
+handle_monitoring_choice(){
+    local select_choice="$1"
+    case  "${select_choice}" in
+        1)show_cpu_usage
+          pause_screen
+          ;;
+        2)show_memory_usage
+          pause_screen
+          ;;
+        3)show_disk_usage
+          pause_screen
+          ;;
+        4)show_open_ports
+          pause_screen
+          ;;
+        5)show_running_services
+          pause_screen
+          ;;
+        6)return 1
+          pause_screen;;
+        *)echo "Invalid Choice" ;;
+    esac
 
 }
-show_open_ports(){
 
-}
-show_running_services(){
-
-}
-
-
-get_valid_monitoring_choice(){
-        local attempt=0
-        local maxattempt=3
-        local monitoring_choice
-
-        while ((attempt < maxattempt)); do
-            read  -e -p "Enter Your Choice:" monitoring_choice
-            if [[ -z "${monitoring_choice}" ]]; then
-                echo "Your Choice is Empty.Retry" >&2
-                ((attempt++))
-            elif (( monitoring_choice < 1 || monitoring_choice > 6)); then
-                        echo "Choice must be from 1 to 6" >&2
-                        ((attempt++))
-                else
-                        echo "Valid Choice." >&2
-                        echo "${monitoring_choice}"
-                        break
-                fi
-                echo "Attempt left :$((maxattempt - attempt))"
-        done
-
-            if ((attempt == maxattempt)); then
-                        echo "To many invalid attempt.Exiting..." >&2
-                        return 1
-            fi
-
-}
 
 
 

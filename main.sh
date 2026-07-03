@@ -38,7 +38,7 @@ get_valid_choice() {
                         break
                 fi
         
-                echo "Attempt left: $((maxattempt - attempt))"
+                echo "Attempt left: $((maxattempt - attempt))" >&2
                         
         done
         if (( attempt == maxattempt )); then
@@ -57,7 +57,8 @@ handle_choice() {
                    source ./modules/user_management.sh
                    ;;
                 2) echo "System Monitoring selected"
-                   read -p "Press Enter to continue..." 
+                   read -p "Press Enter to continue..."
+                   source ./modules/monitoring.sh 
                    ;;
                 3) echo "Backup Management selected"
                    read -p "Press Enter to continue..."

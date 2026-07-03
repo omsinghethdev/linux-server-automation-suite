@@ -31,7 +31,6 @@ get_valid_backup_choice() {
                         ((attempt++))
                 else
                         echo "Valid Choice." >&2
-                        echo "${backup_choice}"
                         break
                 fi
                 echo "Attempt left :$((maxattempt - attempt))"
@@ -40,7 +39,7 @@ get_valid_backup_choice() {
 
                 if ((attempt == maxattempt)); then
                         echo "To many envalid attempt.Exiting..."
-                        return 1
+                        exit 1
                 fi
 }
 
@@ -154,7 +153,7 @@ main_backup(){
  list_avl_backup(){
         get_destination_folder
         mapfile -t backups < <(
-            find "${destinaiton_back}" \
+            find "${destination_back}" \
             -maxdepth 1 \
             -type f \
             -name "*.tar"
@@ -192,8 +191,8 @@ delete_backup(){
         get_destination_folder 
         list_avl_backup
         read -p "Select backup number to delete:" choice 
-        del_backup= "${backups[$((choice - 1))]}"
-        if rm del_backup ; then 
+        del_backup="${backups[$((choice - 1))]}"
+        if rm "$del_backup" ; then 
                 echo "Backup Deleted Successfully"
         else 
                 echo "Error is deletion."

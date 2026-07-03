@@ -22,6 +22,7 @@ show_user_menu(){
 get_valid_choice() {
 	local attempt=0
         local maxattempt=3
+        local choice
         
         while (( attempt < maxattempt )); do
                 read -p "Enter your choice: " choice 
@@ -42,7 +43,7 @@ get_valid_choice() {
 
                 else 
                         echo "Valid Choice" >&2
-                        echo "${choice}"
+                        
                         break
                 fi
         
@@ -409,9 +410,8 @@ while true
 do
     clear_screen
     show_user_menu
-#     get_valid_choice
-    user_choice=$(get_valid_choice)
-    handle_user_choice "$user_choice"
+    get_valid_choice
+    handle_user_choice "$choice"
     if (( $? == 1 )); then
         break
     fi
