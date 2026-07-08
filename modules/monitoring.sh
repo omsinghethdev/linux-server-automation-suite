@@ -83,12 +83,45 @@ show_memory_usage(){
     
 
 }
-# get_disk_usage(){
-#     df -h 
-# }
-# show_disk_usage(){
+ get_disk_usage(){
+     df -h | awk ' 
+     BEGIN {
+        print "["
+        first = 1    
+     }
+     NR > 1 {
+        if (first == 0){
+           print ","
+        }
 
-# }
+        printf "{\"filesystem\":\"%s\" , \"total\":\"%s\" , \"free\":\"%s\" , \"use_percent\":\"%s\", \"monted_on\":\"%s\"}", $1 ,$2 , $4, $5, $6
+
+        first = 0
+     }
+
+     END {
+       print "]"
+     }'
+ }
+ show_disk_usage(){ 
+    local disk_json
+    disk_json=$(get_disk_usage)
+
+    printf "\n"
+    printf "===========================================\n"
+    printf "        Disk Usage Dashboard\n"
+    printf "===========================================\n\n"
+
+    printf "%-20s %-10s %-10s %-15s\n" \
+        "Disk Name" "Total" "Free" "Use%" "Mounted On"
+    printf "%-20s %-10s %-10s %-15s" \
+        "-----------------" "--------" "----------" "----------" "-----------" "-----------------"
+
+        
+
+    
+
+ }
 # show_open_ports(){
 
 # }
