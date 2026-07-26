@@ -29,11 +29,11 @@ get_valid_monitoring_choice(){
             elif (( monitoring_choice < 1 || monitoring_choice > 6)); then
                         echo "Choice must be from 1 to 6" >&2
                         ((attempt++))
-                else
+            else
                         echo "Valid Choice." >&2
                         echo "${monitoring_choice}"
                         break
-                fi
+            fi
                 echo "Attempt left :$((maxattempt - attempt))"
         done
 
@@ -84,7 +84,7 @@ show_memory_usage(){
 
 }
  get_disk_usage(){
-     df -h | awk ' 
+     df -h --output=source,size,avail,pcent,target | awk ' 
      BEGIN {
         print "["
         first = 1    
@@ -94,14 +94,14 @@ show_memory_usage(){
            print ","
         }
 
-        printf "{\"filesystem\":\"%s\" , \"total\":\"%s\" , \"free\":\"%s\" , \"use_percent\":\"%s\", \"monted_on\":\"%s\"}", $1 ,$2 , $4, $5, $6
+        printf "{\"filesystem\":\"%s\" , \"total\":\"%s\" , \"free\":\"%s\" , \"use_percent\":\"%s\", \"mounted_on\":\"%s\"}" , $1 ,$2 , $3, $4, $5
 
         first = 0
-     }
+        }
 
      END {
        print "]"
-     }'
+         }'
  }
  show_disk_usage(){ 
     local disk_json
@@ -112,19 +112,101 @@ show_memory_usage(){
     printf "        Disk Usage Dashboard\n"
     printf "===========================================\n\n"
 
-    printf "%-20s %-10s %-10s %-15s\n" \
+    printf "%-20s %-10s %-10s %-10s %-15s\n" \
         "Disk Name" "Total" "Free" "Use%" "Mounted On"
-    printf "%-20s %-10s %-10s %-15s" \
-        "-----------------" "--------" "----------" "----------" "-----------" "-----------------"
+    printf "%-20s %-10s %-10s %-10s %-15s\n" \
+        "----------" "-----" "------" "------" "-----------------"
 
+    echo "${disk_json}" |
+    jq -r '.[]   |
+        [
+            .filesystem,
+            .total,
+            .free,
+            .use_percent,
+            .mounted_on
         
+        
+        ] |
+        @tsv' |
+
+    while IFS=$'\t' read -r filesystem total free use_percent mounted_on
+    do
+        printf "%-20s %-10s %-10s %-10s %-15s\n" \
+            "$filesystem" \
+            "$total" \
+            "$free" \
+            "$use_percent" \
+            "$mounted_on"
+    done
+
 
     
+}
+get_open_ports(){
+    ss -tunlp | awk '
+        BEGIN {
+            print "["
+            first=1
+        }
+        NR > 1 {
+            if (first == 0)
+                print ","
+            printf "{\"netid\":\"%s\" , \"state\":\"%s\" , \"localadd\":\"%s\" , \"port\":\"%s\", \"process\":\"%s\"}" ,$1, $2, $5, $6, $7
+            
+
+
+            first=0
+        }
+        END {
+            print "]"
+        } 
+    
+    '
+
+}
+ show_open_ports(){
+        local port_json
+        port_json=$(get_open_ports)
+        printf "\n"
+        printf "======================================\n"
+        printf "           Open Ports Status\n"
+        printf "======================================\n\n"
+
+        printf "%-10s %-10s %-15s %-10s %-15s\n"\
+        "Protocol" "State" "Address" "Port" "Process"
+        printf "%-10s %-10s %-15s %-10s %-15s\n"\
+        
+
+        echo "${port_json}" |
+
+        jq -r ' .[] |
+
+          [ .netid,
+            .state,
+            .localadd,
+            .port,
+            .process
+        
+          ] |
+          @tsv' |
+
+        while IFS=$'\t' read -r protocol state address port process
+        do
+            printf "%-10s %-10s %-15s %-10s %-15s\n" \
+                "$protocol"\
+                "$state"\
+                "$address"\
+                "$port"\
+                "$process"\
+
+        done
+
+
+        
+        
 
  }
-# show_open_ports(){
-
-# }
 # show_running_services(){
 
 # }
@@ -163,6 +245,7 @@ while true ; do
     clear_screen
     show_monitoring_menu
     get_valid_monitoring_choice
+    clear_screen
     handle_monitoring_choice "${monitoring_choice}"
     if (( $? == 1 )); then
         break

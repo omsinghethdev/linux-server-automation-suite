@@ -19,25 +19,25 @@ show_user_menu(){
 	echo  "------------------"
   }
 
-get_valid_choice() {
+get_valid_user_choice() {
 	local attempt=0
         local maxattempt=3
-        local choice
+        
         
         while (( attempt < maxattempt )); do
-                read -p "Enter your choice: " choice 
-                if [[ -z "${choice}" ]]; then
+                read -p "Enter your choice: " user_choice 
+                if [[ -z "${user_choice}" ]]; then
                         echo "Choice is empty" 
                         echo "Choose Again"
                         ((attempt++))
 
 
-                elif ! [[ "${choice}" =~ ^[0-9]+$ ]]; then
+                elif ! [[ "${user_choice}" =~ ^[0-9]+$ ]]; then
                         echo "Choice must be number."
                         ((attempt++))
 
 
-                elif  (( choice <1 || choice > 9 )); then
+                elif  (( user_choice <1 || user_choice > 9 )); then
                         echo "Choice must be from 1 to 9"
                         ((attempt++))
 
@@ -410,8 +410,8 @@ while true
 do
     clear_screen
     show_user_menu
-    get_valid_choice
-    handle_user_choice "$choice"
+    get_valid_user_choice
+    handle_user_choice "$user_choice"
     if (( $? == 1 )); then
         break
     fi

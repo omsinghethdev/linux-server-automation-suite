@@ -16,6 +16,7 @@ get_valid_choice() {
 	local attempt=0
         local maxattempt=3
         
+        
         while (( attempt < maxattempt )); do
                 read -p "Enter your choice: " choice 
                 if [[ -z "${choice}" ]]; then
@@ -39,6 +40,7 @@ get_valid_choice() {
                 fi
         
                 echo "Attempt left: $((maxattempt - attempt))" >&2
+                
                         
         done
         if (( attempt == maxattempt )); then
